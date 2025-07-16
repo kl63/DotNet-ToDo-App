@@ -1,0 +1,77 @@
+@model TaskManager.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Task Details";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Task Details</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">@Model.Title</h5>
+        <div>
+            <span class="badge @(Model.Priority == "High" ? "bg-danger" : Model.Priority == "Medium" ? "bg-warning" : "bg-secondary")">
+                @Model.Priority Priority
+            </span>
+            <span class="badge @(Model.IsCompleted ? "bg-success" : "bg-secondary")">
+                @(Model.IsCompleted ? "Completed" : "Pending")
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Description) ? "No description provided" : Model.Description)</dd>
+                    
+                    <dt class="col-sm-3">Due Date</dt>
+                    <dd class="col-sm-9">
+                        @Model.DueDate.ToString("dddd, MMMM d, yyyy")
+                        @if (Model.DueDate.Date < DateTime.Today && !Model.IsCompleted)
+                        {
+                            <span class="badge bg-danger ms-2">Overdue</span>
+                        }
+                        else if (Model.DueDate.Date == DateTime.Today)
+                        {
+                            <span class="badge bg-warning ms-2">Today</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">Created</dt>
+                    <dd class="col-sm-9">@Model.CreatedAt.ToString("MMMM d, yyyy h:mm tt")</dd>
+                    
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">@(Model.IsCompleted ? "Completed" : "Pending")</dd>
+                </dl>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit Task</a>
+                            <form asp-action="ToggleComplete" asp-route-id="@Model.Id" method="post">
+                                <button type="submit" class="btn @(Model.IsCompleted ? "btn-secondary" : "btn-success") w-100">
+                                    @(Model.IsCompleted ? "Mark as Incomplete" : "Mark as Complete")
+                                </button>
+                            </form>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Task</a>
+                            <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

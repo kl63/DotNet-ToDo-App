@@ -1,0 +1,62 @@
+@model TaskManager.Models.Note
+
+@{
+    ViewData["Title"] = "Create Note";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Create New Note</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Index" class="btn btn-secondary">Back to Notes</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Note Details</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label">Note Content</label>
+                        <textarea asp-for="Content" class="form-control" rows="10" placeholder="Write your note here..."></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Save Note</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Tips</h5>
+            </div>
+            <div class="card-body">
+                <p>Notes are perfect for:</p>
+                <ul>
+                    <li>Quick thoughts and ideas</li>
+                    <li>Important information you need to remember</li>
+                    <li>Planning your day or week</li>
+                    <li>Brainstorming sessions</li>
+                </ul>
+                <p>Your notes will be saved with the current date and time.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

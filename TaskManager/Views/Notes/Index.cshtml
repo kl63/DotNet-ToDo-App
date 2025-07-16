@@ -1,0 +1,101 @@
+@model IEnumerable<TaskManager.Models.Note>
+
+@{
+    ViewData["Title"] = "Notes";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Notes</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Create" class="btn btn-primary">Create New Note</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Search Notes</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-6">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search notes..." />
+            </div>
+            <div class="col-md-4">
+                <div class="btn-group" role="group">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <div class="btn-group" role="group">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]" class="btn btn-outline-primary">
+                        <i class="bi bi-sort-down-alt"></i> Sort by Date
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    @if (Model.Any())
+    {
+        foreach (var note in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <small>@note.CreatedAt.ToString("MMMM d, yyyy")</small>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenu-@note.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu-@note.Id">
+                                <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@note.Id">Edit</a></li>
+                                <li><a class="dropdown-item" asp-action="Details" asp-route-id="@note.Id">Details</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@note.Id">Delete</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="note-content">
+                            @if (note.Content.Length > 200)
+                            {
+                                <p>@note.Content.Substring(0, 200)...</p>
+                                <a asp-action="Details" asp-route-id="@note.Id" class="btn btn-sm btn-link ps-0">Read More</a>
+                            }
+                            else
+                            {
+                                <p>@note.Content</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        @if (note.UpdatedAt.HasValue)
+                        {
+                            <small class="text-muted">Updated: @note.UpdatedAt.Value.ToString("MMM d, yyyy h:mm tt")</small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">Created: @note.CreatedAt.ToString("MMM d, yyyy h:mm tt")</small>
+                        }
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@note.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col">
+            <div class="alert alert-info">
+                <p class="mb-0">You don't have any notes yet. <a asp-action="Create">Create your first note</a>!</p>
+            </div>
+        </div>
+    }
+</div>

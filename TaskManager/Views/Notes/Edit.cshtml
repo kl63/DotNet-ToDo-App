@@ -1,0 +1,68 @@
+@model TaskManager.Models.Note
+
+@{
+    ViewData["Title"] = "Edit Note";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Edit Note</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Index" class="btn btn-secondary">Back to Notes</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Edit Note</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label">Note Content</label>
+                        <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Note Info</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Created:</strong> @Model.CreatedAt.ToString("MMMM d, yyyy h:mm tt")</p>
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <p><strong>Last Updated:</strong> @Model.UpdatedAt.Value.ToString("MMMM d, yyyy h:mm tt")</p>
+                }
+                
+                <hr />
+                
+                <div class="d-grid gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-info btn-sm">View Details</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete Note</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

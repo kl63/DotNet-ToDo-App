@@ -1,0 +1,111 @@
+@model TaskManager.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Edit Task";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Edit Task</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Edit Task Details</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="DueDate" class="form-label"></label>
+                        <input asp-for="DueDate" class="form-control" type="date" />
+                        <span asp-validation-for="DueDate" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Priority" class="form-label"></label>
+                        <select asp-for="Priority" class="form-select">
+                            @if (ViewData["PriorityList"] is string[] priorities)
+                            {
+                                @foreach (var priority in priorities)
+                                {
+                                    <option value="@priority">@priority</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input asp-for="IsCompleted" class="form-check-input" />
+                        <label asp-for="IsCompleted" class="form-check-label"></label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Task Info</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Created:</strong> @Model.CreatedAt.ToString("MMMM d, yyyy h:mm tt")</p>
+                <p><strong>Current Status:</strong> 
+                    @if (Model.IsCompleted)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Pending</span>
+                    }
+                </p>
+                
+                <hr />
+                
+                <div class="d-grid gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-info btn-sm">View Details</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete Task</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

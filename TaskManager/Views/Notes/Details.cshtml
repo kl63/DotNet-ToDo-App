@@ -1,0 +1,69 @@
+@model TaskManager.Models.Note
+
+@{
+    ViewData["Title"] = "Note Details";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Note Details</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Index" class="btn btn-secondary">Back to Notes</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Created on @Model.CreatedAt.ToString("MMMM d, yyyy")</h5>
+        <div>
+            @if (Model.UpdatedAt.HasValue)
+            {
+                <span class="badge bg-info">Updated: @Model.UpdatedAt.Value.ToString("MMM d, yyyy h:mm tt")</span>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="note-content">
+                    <p class="white-space-pre-wrap">@Model.Content</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit Note</a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Note</a>
+                            <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Note Info</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Created:</strong> @Model.CreatedAt.ToString("MMMM d, yyyy h:mm tt")</p>
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <p><strong>Last Updated:</strong> @Model.UpdatedAt.Value.ToString("MMMM d, yyyy h:mm tt")</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .white-space-pre-wrap {
+        white-space: pre-wrap;
+    }
+</style>

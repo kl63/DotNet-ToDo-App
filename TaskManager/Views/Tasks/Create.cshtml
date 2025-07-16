@@ -1,0 +1,99 @@
+@model TaskManager.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Create Task";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Create New Task</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Task Details</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="DueDate" class="form-label"></label>
+                        <input asp-for="DueDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="DueDate" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Priority" class="form-label"></label>
+                        <select asp-for="Priority" class="form-select">
+                            @if (ViewData["PriorityList"] is string[] priorities)
+                            {
+                                @foreach (var priority in priorities)
+                                {
+                                    <option value="@priority">@priority</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input asp-for="IsCompleted" class="form-check-input" />
+                        <label asp-for="IsCompleted" class="form-check-label"></label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Tips</h5>
+            </div>
+            <div class="card-body">
+                <p>Create a new task with the following details:</p>
+                <ul>
+                    <li><strong>Title:</strong> A clear, concise title for your task</li>
+                    <li><strong>Description:</strong> Any details that will help you complete the task</li>
+                    <li><strong>Due Date:</strong> When the task needs to be completed</li>
+                    <li><strong>Priority:</strong> How important is this task (High, Medium, Low)</li>
+                </ul>
+                <p>Tasks created today will automatically appear on your dashboard.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

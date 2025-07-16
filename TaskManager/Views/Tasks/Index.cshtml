@@ -1,0 +1,182 @@
+@model IEnumerable<TaskManager.Models.TaskItem>
+
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <h2>Task Management</h2>
+    </div>
+    <div class="col text-end">
+        <a asp-action="Create" class="btn btn-primary">Create New Task</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Filter Tasks</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search by title or description" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Priority</label>
+                <select name="priority" class="form-select">
+                    @if (ViewData["CurrentPriority"]?.ToString() == "Low")
+                    {
+                        <option value="All">All Priorities</option>
+                        <option value="Low" selected>Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    }
+                    else if (ViewData["CurrentPriority"]?.ToString() == "Medium")
+                    {
+                        <option value="All">All Priorities</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                    }
+                    else if (ViewData["CurrentPriority"]?.ToString() == "High")
+                    {
+                        <option value="All">All Priorities</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High" selected>High</option>
+                    }
+                    else
+                    {
+                        <option value="All" selected>All Priorities</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">All Tasks</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col">
+                <div class="alert alert-info">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Today's Tasks:</strong> @ViewData["TodaysTasks"]
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Overdue Tasks:</strong> @ViewData["OverdueTasks"]
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-outline-primary">Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Any())
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParam"]">
+                                @Html.DisplayNameFor(model => model.Title)
+                            </a>
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]">
+                                @Html.DisplayNameFor(model => model.DueDate)
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["PrioritySortParam"]">
+                                @Html.DisplayNameFor(model => model.Priority)
+                            </a>
+                        </th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                            <td>@(item.Description?.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description)</td>
+                            <td>
+                                @item.DueDate.ToString("MMM d, yyyy")
+                                @if (item.DueDate.Date < DateTime.Today && !item.IsCompleted)
+                                {
+                                    <span class="badge bg-danger ms-1">Overdue</span>
+                                }
+                                else if (item.DueDate.Date == DateTime.Today)
+                                {
+                                    <span class="badge bg-warning ms-1">Today</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Priority == "High")
+                                {
+                                    <span class="badge bg-danger">High</span>
+                                }
+                                else if (item.Priority == "Medium")
+                                {
+                                    <span class="badge bg-warning">Medium</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Low</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsCompleted)
+                                {
+                                    <span class="badge bg-success">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Pending</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                                    <form asp-action="ToggleComplete" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm @(item.IsCompleted ? "btn-secondary" : "btn-success")">
+                                            @(item.IsCompleted ? "Mark Incomplete" : "Complete")
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <p class="mb-0">No tasks found. <a asp-action="Create">Create a new task</a>!</p>
+            </div>
+        }
+    </div>
+</div>
