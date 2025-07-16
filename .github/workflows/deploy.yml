@@ -22,7 +22,8 @@ jobs:
         env:
           HOST: 159.89.245.206
           USERNAME: root
-          TARGET_DIR: /var/www/DotNet-ToDo-App/TaskManager
+          TARGET_DIR: /var/www/DotNet-ToDo-App
+
           PM2_NAME: DotNet-ToDo-App
           DLL_NAME: TaskManager.dll
 
@@ -55,4 +56,4 @@ jobs:
 
 
 
-          
+
