@@ -3,7 +3,7 @@ name: Deploy .NET App
 on:
   push:
     branches:
-      - main  # or whichever branch you're deploying
+      - main
 
 jobs:
   deploy:
@@ -18,14 +18,13 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to DigitalOcean via SSH
+      - name: Deploy to DigitalOcean
         env:
           HOST: 159.89.245.206
           USERNAME: root
           TARGET_DIR: /var/www/DotNet-ToDo-App
-
-          PM2_NAME: DotNet-ToDo-App
           DLL_NAME: TaskManager.dll
+          PM2_NAME: DotNet-ToDo-App
 
         run: |
           ssh -o StrictHostKeyChecking=no $USERNAME@$HOST << 'EOF'
@@ -37,23 +36,16 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            echo "Publishing .NET app..."
-            dotnet publish -c Release -o out
+            echo "Publishing .NET project from TaskManager/TaskManager.csproj..."
+            dotnet publish TaskManager/TaskManager.csproj -c Release -o TaskManager/out
 
-            echo "Restarting PM2 process..."
-            if pm2 list | grep -q $PM2_NAME; then
-              echo "Restarting existing PM2 app..."
-              pm2 restart $PM2_NAME
+            echo "Restarting or starting PM2..."
+            if pm2 list | grep -q "$PM2_NAME"; then
+              pm2 restart "$PM2_NAME"
             else
-              echo "Starting new PM2 app..."
-              pm2 start "dotnet out/$DLL_NAME" --name $PM2_NAME
+              pm2 start "dotnet TaskManager/out/$DLL_NAME" --name "$PM2_NAME"
             fi
 
-            echo "Saving PM2 state..."
+            echo "Saving PM2 process list..."
             pm2 save
           EOF
-
-
-
-
-
