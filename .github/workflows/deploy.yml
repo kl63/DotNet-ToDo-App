@@ -19,34 +19,26 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy to DigitalOcean
-        env:
-          HOST: 159.89.245.206
-          USERNAME: root
-          TARGET_DIR: /var/www/DotNet-ToDo-App
-          DLL_NAME: TaskManager.dll
-          PM2_NAME: DotNet-ToDo-App
-
         run: |
-          ssh -o StrictHostKeyChecking=no $USERNAME@$HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@159.89.245.206 << 'EOF'
             set -e
             echo "Navigating to project folder..."
-            cd $TARGET_DIR
+            cd /var/www/DotNet-ToDo-App
 
             echo "Fetching latest code..."
             git fetch origin
             git reset --hard origin/main
 
-            echo "Publishing .NET project from TaskManager/TaskManager.csproj..."
+            echo "Publishing .NET project..."
             dotnet publish TaskManager/TaskManager.csproj -c Release -o TaskManager/out
 
             echo "Restarting or starting PM2..."
-            if pm2 list | grep -q "$PM2_NAME"; then
-              pm2 restart "$PM2_NAME"
+            if pm2 list | grep -q "DotNet-ToDo-App"; then
+              pm2 restart DotNet-ToDo-App
             else
-              pm2 start "dotnet TaskManager/out/$DLL_NAME" --name "$PM2_NAME"
+              pm2 start "dotnet TaskManager/out/TaskManager.dll" --name DotNet-ToDo-App
             fi
 
             echo "Saving PM2 process list..."
             pm2 save
           EOF
-          
